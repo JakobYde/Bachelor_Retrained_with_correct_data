@@ -1,4 +1,5 @@
 from random import choice, random
+from random import seed as random_seed
 
 class Parameter:
     def __init__(self, default_value = None, change_chance = None, choices = []):
@@ -34,7 +35,7 @@ class Parameter:
         self.change_chance = new_chance
         
     def get_permutations(self):
-        if self.default_value is not None:
+        if (self.default_value is not None) and (self.default_value not in self.choices):
             return len(self.choices) + 1
         else:
             return len(self.choices)
@@ -55,12 +56,50 @@ class Parameter:
 
         return value
 
+class Layer:
+    def __init__(self, default_layer = None, amount_change_chance = None, size_change_chance = None, choice_layer_amount = None, choice_layer_sizes = []):
+        assert (((amount_change_chance is None) or (0 <= amount_change_chance <= 1)) and ((size_change_chance is None) or (0 <= size_change_chance <= 1))), 'Chance should be between 0 and 1 if specified.'
+        assert (amount_change_chance == None or (default_layer != None and choice_layer_amount != None))
+        assert (size_change_chance == None or (default_layer != None and choice_layer_sizes != []))
+        assert ((choice_layer_amount == None) == (choice_layer_sizes == [])), 'choice_layer_amount and choice_layer_sizes should either both be set or empty/none.'
+
+        if default_layer != None:
+            self.default_layer = default_layer
+        else:
+            self.amount_change_chance = 1
+            self.size_change_chance = 1
+            self.default_layer = None
+
+        if choice_layer_amount != []: 
+            self.choice_layer_amount = choice_layer_amount
+            self.choice_layer_sizes = choice_layer_sizes
+        else: 
+            self.amount_change_chance = 0
+            self.size_change_chance = 1
+        
+        if default_layer != None and choice_layer_amount != None: 
+            self.amount_change_chance = amount_change_chance
+            self.size_change_chance = size_change_chance
+    
+    def get_permutations(self):
+        if self.choice_layer_sizes != None:
+            prod = 1
+            for i in range(1, self.choice_layer_amount):
+                prod *= pow(len(self.choice_layer_sizes), i)
+            return prod
+        else: return 1
+
+    def sample(self):
+        return [choice(self.choice_layer_sizes) for i in range(0,choice(range(1, self.choice_layer_amount + 1)))]
+
 
 class ParameterGenerator:
-    def __init__(self, unique=False):
-        self.parameters = {}
+    def __init__(self, unique=False, seed=None):
+        assert(seed == None or isinstance(seed, int)),'Seed should be an integer.'
 
-        pass
+        self.parameters = {}
+        if seed != None:
+            random_seed(seed)
 
     def add_value(self, parameter_name, default_value = None, change_chance = None, choices = []):
         assert isinstance(parameter_name, str), 'Parameter name not string object.'
@@ -76,6 +115,12 @@ class ParameterGenerator:
         for key in self.parameters:
             result *= self.parameters[key].get_permutations()
         return result
+    
+    def add_layer(self, layer_name, default_layer = None, amount_change_chance = None, size_change_chance = None, choice_layer_amount = None, choice_layer_sizes = []):
+        assert (amount_change_chance == None or (amount_change_chance <= 1 and 0 <= amount_change_chance and size_change_chance <= 1 and 0 <= size_change_chance)),'Chances should be between 0 and 1.'
+
+        lay = Layer(default_layer, amount_change_chance, size_change_chance, choice_layer_amount, choice_layer_sizes)
+        self.parameters[layer_name] = lay
 
     # This implementation is based on randomness so the time complexity is terrible with a lot of permutations if the argument amount is near the limit.
     def sample(self, amount=1, unique=False):
