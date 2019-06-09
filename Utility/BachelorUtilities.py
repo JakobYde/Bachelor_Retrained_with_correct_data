@@ -3,7 +3,7 @@ import keras
 from os import getenv
 
 from keras.layers import Input, LSTM, Dense, SimpleRNN, concatenate, Masking, Dropout
-from keras.models import Sequential
+from keras.models import Sequential, Model
 from keras import optimizers
 from keras.callbacks import ReduceLROnPlateau
 
@@ -83,32 +83,48 @@ def get_cross_validation(eul, crp, das28, n):
         result[i] = [[x1t, x1v], [x2t, x2v], [yt, yv]]  
     return result
 
-def get_model(parameters, seed=None, model_path="", model_storage="", type="none"):
-    if type == none:
-        
-        # Use the sequential model to be able to check for dead ReLUs
-        model = Sequential()
-        
-        for layer_size in parameters["dense_layers"]:
-            model.add(Dense(layer_size, activation=parameters["activation"], input_shape=(51,)))
-            if parameters["dropout"] != 0:
-                model.add(Dropout(parameters["dropout"]))
+def build_model(parameters, seed=None, rnn_type="none", input_eular, input_crp):
 
-        if parameters["optimizer"] == "adam":
-            optimizer = Adam(lr=parameters["learning_rate"])
-        else if parameters["optimizer"] == "rms_prop":
-            optimizer = RMSprop(lr=parameters["learning_rate"])
-        else:
-            optimizer = Adadelta()
+    dense_initializer = keras.initializers.RandomNormal(seed=seed)
 
-        model.compile(optimizer=optimizer, loss='mse')
+    if rnn_type == "none":
+        x = concatenate([input_eular, input_crp], axis=1)
 
-        return model
     else:
-        if type == "lstm":
-            pass
-        else if type == "simplernn":
-            pass
+        rnn_kernel_initializer = keras.initializers.glorot_uniform(seed=seed)
+        rnn_recurrent_initializer = keras.initializers.orthogonal(seed=seed)
+        x = Masking(mask_value=-1)(input_eular)
+
+        if rnn_type == "lstm":
+            x = LSTM(parameters["rnn_size"], activation=parameters["lstm_activation"], 
+                     kernel_initializer=rnn_kernel_initializer, recurrent_initializer=rnn_recurrent_initializer, 
+                     dropout=parameters["dropout"], recurrent_dropout=0.0)(x)
+
+        elif rnn_type == "simplernn":
+            x = SimpleRNN(parameters["rnn_size"], activation=parameters["lstm_activation"], 
+                          kernel_initializer=rnn_kernel_initializer, recurrent_initializer=rnn_recurrent_initializer, 
+                          dropout=parameters["dropout"], recurrent_dropout=0.0)(x)
+        
+        x = concatenate([x, input_crp])
+
+    for layer_size in parameters["dense_layers"]:
+        x = Dense(layer_size, activation=parameters["activation"])(x)
+        if parameters["dropout"] != 0:
+            x = Dropout(parameters["dropout"])(x)
+    output = Dense(1, activation=parameters["last_activation"])(x)
+
+    model = Model(input=[input_eular, input_crp], output=output)
+
+    if parameters["optimizer"] == "adam":
+        optimizer = Adam(lr=parameters["learning_rate"])
+    elif parameters["optimizer"] == "rms_prop":
+        optimizer = RMSprop(lr=parameters["learning_rate"])
+    else:
+        optimizer = Adadelta()
+
+    model.compile(optimizer=optimizer, loss='mse')
+
+    return model
 
 
 def train_network(parameters, data, seed=None, model_path="", model_storage=""):
@@ -118,8 +134,6 @@ def train_network(parameters, data, seed=None, model_path="", model_storage=""):
     [[x1t, x1v], [x2t, x2v], [yt, yv]] = data
 
     rnn_type = parameters['rnn_type']
-    rnn_size = parameters['rnn_size']
-
 
     if rnn_type == 'none':
         x1t = keras.utils.to_categorical(x1t, 5)
@@ -128,36 +142,25 @@ def train_network(parameters, data, seed=None, model_path="", model_storage=""):
         x1t = [i.flatten() for i in x1t]
         x1v = [i.flatten() for i in x1v]
 
-        #input_eular = Input(shape=(x1t.shape[1],), dtype='float32', name='input_eular')
-        #input_crp = Input(shape=(1,), dtype='float32', name='input_crp')
+        input_eular = Input(shape=(x1t.shape[1],), dtype='float32', name='input_eular')
+        input_crp = Input(shape=(1,), dtype='float32', name='input_crp')
 
-        cb_lrs = ReduceLROnPlateau()
-        cbs = [cb_lrs]
-
-        model = get_model(parameters, model_path="", model_storage="")
-
-        hist = model.fit(
-                        x=[x1t, x2t],
-                        y=yt,
-                        batch_size=batch_size,
-                        epochs=epochs,
-                        verbose=False,
-                        callbacks=cbs,
-                        validation_data=([x1v, x2v], yv)
-                        )
-
-
-        pass
     else:
         input_eular = Input(shape=(n_joints, 1), dtype='float32', name='input_eular')
         input_crp = Input(shape=(1,), dtype='float32', name='input_crp')
 
-        if rnn_type == 'lstm':
-            x = Masking(mask_value=-1)(input_eular)
-            x = LSTM(rnn_size, return_sequences=False, kernel_initializer=keras.initializers.glorot_uniform(seed=seed), recurrent_initializer=keras.initializers.orthogonal(seed=seed))
+    cb_lrs = ReduceLROnPlateau()
+    cbs = [cb_lrs]
 
-        else if rnn_type == 'simplernn':
-            pass
+    model = build_model(parameters, seed=seed,rnn_type=rnn_type, input_eular=input_eular, input_crp=input_crp)
 
-        
-pass
+    hist = model.fit(
+                    x=[x1t, x2t],
+                    y=yt,
+                    batch_size=batch_size,
+                    epochs=epochs,
+                    verbose=False,
+                    callbacks=cbs,
+                    validation_data=([x1v, x2v], yv)
+                    )
+    return hist

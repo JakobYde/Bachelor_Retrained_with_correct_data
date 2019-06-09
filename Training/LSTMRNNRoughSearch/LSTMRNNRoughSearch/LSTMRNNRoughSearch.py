@@ -1,8 +1,5 @@
 import sys
 sys.path.insert(0, r"../../..")
-import os
-
-
 import Utility.ParameterGenerator as Pg
 import Utility.BachelorUtilities as Bu
 
@@ -16,6 +13,8 @@ pg.add_value('learning_rate', choices=[0.01, 0.005, 0.001, 0.0005, 0.0001, 0.000
 pg.add_value('optimizer', choices=['adam', 'rmsprop', 'adadelta'])
 pg.add_value('activation', choices=['relu', 'leaky_relu', 'sigmoid'])
 pg.add_value('dropout', choices=[0, 0.1, 0.15, 0.2])
+pg.add_value('lstm_activation', choices=['relu','tanh'])
+pg.add_value('lasT_activation', choices=['relu', None])
 
 parameters = pg.sample(200, unique=True)
 
