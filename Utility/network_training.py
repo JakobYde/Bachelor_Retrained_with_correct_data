@@ -99,6 +99,8 @@ def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbo
     optimizer = get_optimizer(parameters['optimizer'], parameters['learning_rate'])
     model.compile(optimizer=optimizer, loss=loss)
 
+    if verbose: model.summary()
+
     hist = model.fit(
                     x=[x1t, x2t],
                     y=yt,
