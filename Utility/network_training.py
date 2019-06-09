@@ -84,7 +84,7 @@ def build_model(input_eular, input_crp, parameters, seed=None):
 
     return model
 
-def print_csv(filename, parameters, performance, time=0.):
+def print_csv(filename, parameters, min_performance, last_performance, time=0.):
     assert(filename != ''),'filename should be set if printing to file.'
     assert(False),'Implement me please.'
     pass
@@ -115,15 +115,16 @@ def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbo
                     callbacks=callbacks,
                     validation_data=([x1v, x2v], yv)
                     )
-    last_perf = hist.history['loss'][-1]
-    min_perf = min(hist.history['loss'])
 
-    if use_min_perf: perf = min_perf
-    else perf = last_perf
+    min_perf = min(hist.history['loss'])
+    last_perf = hist.history['loss'][-1]
 
     time = datetime.datetime.now() - t_start
     time = time.seconds + time.microseconds / 1e6
 
-    if log: print_csv(filename=log_filename, parameters=parameters, performance=perf, time=time)
+    if log: print_csv(filename=log_filename, parameters=parameters, min_performance=min_perf, last_performance=last_perf, time=time)
 
-    return perf
+    if use_min_perf:
+        return min_perf
+    else:
+        return last_perf
