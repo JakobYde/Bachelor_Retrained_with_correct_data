@@ -31,5 +31,5 @@ cbs = Tr.get_callbacks(plat=True)
 for i_param, param in enumerate(parameters):
     results = []
     for i_cv, cv in enumerate(cvs):
-        results.append(Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=True))
+        results.append(Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False))
 pass
