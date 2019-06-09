@@ -12,7 +12,7 @@
     <Name>LSRMRNNRoughSearch</Name>
     <RootNamespace>LSRMRNNRoughSearch</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>CondaEnv|CondaEnv|python</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|CNN</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,6 +26,7 @@
     <Compile Include="LSTMRNNRoughSearch.py" />
   </ItemGroup>
   <ItemGroup>
+    <InterpreterReference Include="CondaEnv|CondaEnv|CNN" />
     <InterpreterReference Include="CondaEnv|CondaEnv|python" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
