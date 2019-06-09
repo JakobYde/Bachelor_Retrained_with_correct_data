@@ -3,6 +3,9 @@ import keras
 from os import getenv
 
 from keras.layers import Input, LSTM, Dense, SimpleRNN, concatenate, Masking, Dropout
+from keras.models import Sequential
+from keras import optimizers
+from keras.callbacks import ReduceLROnPlateau
 
 # Training - training set
 # Testing - testing set
@@ -80,6 +83,34 @@ def get_cross_validation(eul, crp, das28, n):
         result[i] = [[x1t, x1v], [x2t, x2v], [yt, yv]]  
     return result
 
+def get_model(parameters, seed=None, model_path="", model_storage="", type="none"):
+    if type == none:
+        
+        # Use the sequential model to be able to check for dead ReLUs
+        model = Sequential()
+        
+        for layer_size in parameters["dense_layers"]:
+            model.add(Dense(layer_size, activation=parameters["activation"], input_shape=(51,)))
+            if parameters["dropout"] != 0:
+                model.add(Dropout(parameters["dropout"]))
+
+        if parameters["optimizer"] == "adam":
+            optimizer = Adam(lr=parameters["learning_rate"])
+        else if parameters["optimizer"] == "rms_prop":
+            optimizer = RMSprop(lr=parameters["learning_rate"])
+        else:
+            optimizer = Adadelta()
+
+        model.compile(optimizer=optimizer, loss='mse')
+
+        return model
+    else:
+        if type == "lstm":
+            pass
+        else if type == "simplernn":
+            pass
+
+
 def train_network(parameters, data, seed=None, model_path="", model_storage=""):
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
     assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
@@ -94,8 +125,28 @@ def train_network(parameters, data, seed=None, model_path="", model_storage=""):
         x1t = keras.utils.to_categorical(x1t, 5)
         x1v = keras.utils.to_categorical(x1v, 5)
 
-        input_eular = Input(shape=(x1t.shape[1],), dtype='float32', name='input_eular')
-        input_crp = Input(shape=(1,), dtype='float32', name='input_crp')
+        x1t = [i.flatten() for i in x1t]
+        x1v = [i.flatten() for i in x1v]
+
+        #input_eular = Input(shape=(x1t.shape[1],), dtype='float32', name='input_eular')
+        #input_crp = Input(shape=(1,), dtype='float32', name='input_crp')
+
+        cb_lrs = ReduceLROnPlateau()
+        cbs = [cb_lrs]
+
+        model = get_model(parameters, model_path="", model_storage="")
+
+        hist = model.fit(
+                        x=[x1t, x2t],
+                        y=yt,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        verbose=False,
+                        callbacks=cbs,
+                        validation_data=([x1v, x2v], yv)
+                        )
+
+
         pass
     else:
         input_eular = Input(shape=(n_joints, 1), dtype='float32', name='input_eular')
@@ -105,9 +156,8 @@ def train_network(parameters, data, seed=None, model_path="", model_storage=""):
             x = Masking(mask_value=-1)(input_eular)
             x = LSTM(rnn_size, return_sequences=False, kernel_initializer=keras.initializers.glorot_uniform(seed=seed), recurrent_initializer=keras.initializers.orthogonal(seed=seed))
 
-        if rnn_type == 'simplernn':
+        else if rnn_type == 'simplernn':
+            pass
 
-
-
-
-    pass
+        
+pass

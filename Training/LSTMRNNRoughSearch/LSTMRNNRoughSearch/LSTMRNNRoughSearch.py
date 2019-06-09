@@ -1,5 +1,8 @@
 import sys
 sys.path.insert(0, r"../../..")
+import os
+
+
 import Utility.ParameterGenerator as Pg
 import Utility.BachelorUtilities as Bu
 
@@ -11,6 +14,8 @@ pg.add_value('rnn_size', choices=range(1,1000))
 pg.add_layer('dense_layers', choice_layer_amount=10,choice_layer_sizes=list(range(1,500)))
 pg.add_value('learning_rate', choices=[0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005])
 pg.add_value('optimizer', choices=['adam', 'rmsprop', 'adadelta'])
+pg.add_value('activation', choices=['relu', 'leaky_relu', 'sigmoid'])
+pg.add_value('dropout', choices=[0, 0.1, 0.15, 0.2])
 
 parameters = pg.sample(200, unique=True)
 
