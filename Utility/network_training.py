@@ -89,7 +89,7 @@ def print_csv(filename, parameters, performance, time=0.):
     assert(False),'Implement me please.'
     pass
 
-def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbose=False, seed=None, callbacks=[], log=False, log_filename='', model_path='', model_storage=''):
+def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], log=False, log_filename='', model_path='', model_storage=''):
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
     assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
 
@@ -115,11 +115,15 @@ def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbo
                     callbacks=callbacks,
                     validation_data=([x1v, x2v], yv)
                     )
-    perf = hist.history['loss'][-1]
+    last_perf = hist.history['loss'][-1]
+    min_perf = min(hist.history['loss'])
+
+    if use_min_perf: perf = min_perf
+    else perf = last_perf
 
     time = datetime.datetime.now() - t_start
     time = time.seconds + time.microseconds / 1e6
 
     if log: print_csv(filename=log_filename, parameters=parameters, performance=perf, time=time)
 
-    return hist
+    return perf
