@@ -6,6 +6,8 @@ from keras.optimizers import Adam, RMSprop, Adadelta
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorBoard
 from keras.utils import to_categorical
 from keras.initializers import RandomNormal, glorot_uniform, orthogonal
+from keras.activations import tanh, relu, linear
+from keras.layers import LeakyReLU
 
 max_layers = 10
 
@@ -43,11 +45,17 @@ def get_optimizer(optimizer='adam', learning_rate=0.001):
     if optimizer == 'adadelta': optimizer = Adadelta()
     return optimizer
 
+def get_activation(x, activation='relu'):
+    assert (activation in ['linear', 'relu', 'leaky_relu', 'tanh']),'Activation function not recognized.'
+    if activation == 'linear': x = linear(x)
+    if activation == 'relu': x = relu(x)
+    if activation == 'leaky_relu': x = LeakyReLU()(x)
+    if activation == 'tanh': x = tanh(x)
+
+    return x
 
 def build_model(input_eular, input_crp, parameters, seed=None):
     dropout = parameters['dropout']
-    activation = parameters['activation']
-    last_activation = parameters['last_activation']
     optimizer = parameters['optimizer']
     learning_rate = parameters['learning_rate']
 
@@ -76,11 +84,13 @@ def build_model(input_eular, input_crp, parameters, seed=None):
         
         x = concatenate([x, input_crp])
 
-    for layer_size in parameters["dense_layers"]:
-        x = Dense(layer_size, activation=activation, kernel_initializer=dense_initializer)(x)
+    for layer_size in [val for val in parameters["dense_layers"] if val != 0]:
+        x = Dense(layer_size, activation='linear', kernel_initializer=dense_initializer)(x)
+        x = get_activation(x, parameters['activation'])
         if dropout != 0:
             x = Dropout(rate=dropout)(x)
-    output = Dense(1, activation=last_activation, kernel_initializer=dense_initializer)(x)
+    output = Dense(1, activation='linear', kernel_initializer=dense_initializer)(x)
+    output = get_activation(output, parameters['last_activation'])
 
     model = Model(input=[input_eular, input_crp], output=output)
 
@@ -106,7 +116,7 @@ def print_row(filename, parameters, min_performance, last_performance, log, time
     log.write_row(row)
     return row
 
-def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], log=None, log_filename='', model_path='', model_storage=''):
+def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], model_path='', model_storage=''):
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
     assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
 
@@ -139,9 +149,4 @@ def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbo
     time = datetime.datetime.now() - t_start
     time = time.seconds + time.microseconds / 1e6
 
-    if log != None: print_row(filename=log_filename, parameters=parameters, min_performance=min_perf, last_performance=last_perf, time=time, log=log)
-
-    if use_min_perf:
-        return min_perf
-    else:
-        return last_perf
+    return last_perf, min_perf, time

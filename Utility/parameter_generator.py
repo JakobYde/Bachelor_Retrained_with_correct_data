@@ -90,7 +90,10 @@ class Layer:
         else: return 1
 
     def sample(self):
-        return [choice(self.choice_layer_sizes) for i in range(0,choice(range(1, self.choice_layer_amount + 1)))]
+        n = choice(range(1, self.choice_layer_amount + 1))
+        s = [choice(self.choice_layer_sizes) for i in range(0,n)]
+        s += [0 for i in range(0, self.choice_layer_amount - n)]
+        return s
 
 
 class ParameterGenerator:
@@ -135,3 +138,22 @@ class ParameterGenerator:
                     parameter_set[key] = self.parameters[key].sample()
             parameters.append(parameter_set)
         return parameters
+    
+    def get_head(self):
+        arr = []
+        for key in self.parameters:
+            if isinstance(self.parameters[key], Layer):
+                arr += [(str(key) + '_' + str(i + 1)) for i in range(0, self.parameters[key].choice_layer_amount)]
+            else:
+                arr.append(str(key))
+        return arr
+
+    def as_array(self, parameter):
+        arr = []
+        for key in parameter:
+            assert(key in self.parameters),'Parameter not in parameter generator.'
+            if isinstance(self.parameters[key], Layer):
+                arr += [str(c) for c in parameter[key]]
+            else:
+                arr.append(str(parameter[key]))
+        return arr

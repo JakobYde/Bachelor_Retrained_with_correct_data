@@ -81,7 +81,7 @@ def get_cross_validation(eul, crp, das28, n):
     return result
 
 class CSVWriter:
-    def __init__(self, filename, parameters, dialect=None, clear_on_creation=True):
+    def __init__(self, filename, head=[], dialect=None, clear_on_creation=True):
         assert isinstance(filename, str),'File name should be a string.'
         assert isinstance(clear_on_creation,bool),'clear_on_creation not bool.'
 
@@ -92,22 +92,17 @@ class CSVWriter:
         self.dialect = (dialect != None)
 
         if clear_on_creation:
-            head = []
-            for key in parameters:
-                if key != 'dense_layers':
-                    head.append(key)
-                else:
-                    for i in range(10):
-                        head.append(key + '_{}'.format(i))
 
             with open(self.filename, 'w') as f:
                 if self.dialect:
                     writer = csv.writer(f,'dial')
                 else:
                     writer = csv.writer(f)
-                writer.writerow(head)
+                if head != []:
+                    assert (isinstance(head, list)),'head should be a list of printable elements.'
+                    writer.writerow(head)
 
-    def write_row(self, row, clear_after=True):
+    def write_row(self, row):
 
         with open(self.filename, 'a') as f:
             if self.dialect:

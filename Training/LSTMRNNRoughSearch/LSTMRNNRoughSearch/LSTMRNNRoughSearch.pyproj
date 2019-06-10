@@ -12,7 +12,7 @@
     <Name>LSRMRNNRoughSearch</Name>
     <RootNamespace>LSRMRNNRoughSearch</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>Global|VisualStudio|pythonkeras</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|KerasGPU2</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|CNN" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|KerasGPU2" />
     <InterpreterReference Include="CondaEnv|CondaEnv|python" />
     <InterpreterReference Include="Global|VisualStudio|python" />
     <InterpreterReference Include="Global|VisualStudio|pythonkeras" />

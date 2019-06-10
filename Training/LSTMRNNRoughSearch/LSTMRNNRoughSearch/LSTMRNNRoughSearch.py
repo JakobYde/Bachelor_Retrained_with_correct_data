@@ -4,9 +4,10 @@ import Utility.parameter_generator as Pg
 import Utility.bachelor_utilities as Bu
 import Utility.network_training as Tr
 
-filename = r'../../../logs/initial_training.csv'
+filename = r'../../../Logs/initial_training.csv'
 
 seed = 0
+n_cv = 5
 
 pg = Pg.ParameterGenerator(seed=seed)
 pg.add_layer('dense_layers', choice_layer_amount=10,choice_layer_sizes=list(range(1,500)))
@@ -18,7 +19,7 @@ pg.add_value('rnn_type', default_value='none', change_chance=0.5, choices=['lstm
 pg.add_value('rnn_size', choices=range(1,1000))
 pg.add_value('rnn_activation', choices=['relu','tanh'])
 pg.add_value('rnn_dropout', choices=[0, 0.1, 0.15, 0.2, 0.25])
-pg.add_value('last_activation', choices=['relu', None])
+pg.add_value('last_activation', choices=['relu', 'linear'])
 
 parameters = pg.sample(200, unique=True)
 
@@ -26,14 +27,35 @@ first_param = parameters[0]
 last_param = parameters[-1]
 
 x1, x2, y = Bu.load_data('FixedTraining')
-cvs = Bu.get_cross_validation(x1, x2, y, 5)
+cvs = Bu.get_cross_validation(x1, x2, y, n_cv)
 
 cbs = Tr.get_callbacks(plat=True)
 
-log = Bu.CSVWriter(filename, parameters[0])
+arr = pg.as_array(first_param)
+
+head = ['iteration']
+head += pg.get_head()
+head += ['last_perf', 'min_perf', 'time']
+print(head)
+
+log = Bu.CSVWriter(filename, head=head)
 
 for i_param, param in enumerate(parameters):
-    results = []
+    last_perfs = 0
+    min_perfs = 0
+    time = 0
     for i_cv, cv in enumerate(cvs):
-        results.append(Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False, log=log))
+        last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False)
+        last_perfs += last_perf
+        min_perfs += min_perf
+        time += dt
+    last_perfs /= n_cv
+    min_perfs /= n_cv
+    
+    row = [i_param]
+    row += pg.as_array(param)
+    row += [str(c) for c in [last_perfs, min_perfs, time]]
+    print(row)
+    log.write_row(row)
+    
 pass
