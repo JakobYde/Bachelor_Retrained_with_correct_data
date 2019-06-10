@@ -4,6 +4,8 @@ import Utility.parameter_generator as Pg
 import Utility.bachelor_utilities as Bu
 import Utility.network_training as Tr
 
+filename = r'../../../logs/initial_training.csv'
+
 seed = 0
 
 pg = Pg.ParameterGenerator(seed=seed)
@@ -28,8 +30,10 @@ cvs = Bu.get_cross_validation(x1, x2, y, 5)
 
 cbs = Tr.get_callbacks(plat=True)
 
+log = Bu.CSVWriter(filename, parameters[0])
+
 for i_param, param in enumerate(parameters):
     results = []
     for i_cv, cv in enumerate(cvs):
-        results.append(Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False))
+        results.append(Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False, log=log))
 pass

@@ -1,5 +1,6 @@
 import numpy as np
 import keras
+import csv
 from os import getenv
 
 
@@ -78,3 +79,40 @@ def get_cross_validation(eul, crp, das28, n):
         x2v = (x2v - m) / std
         result[i] = [[x1t, x1v], [x2t, x2v], [yt, yv]]  
     return result
+
+class CSVWriter:
+    def __init__(self, filename, parameters, dialect=None, clear_on_creation=True):
+        assert isinstance(filename, str),'File name should be a string.'
+        assert isinstance(clear_on_creation,bool),'clear_on_creation not bool.'
+
+        if dialect != None:
+            csv.register_dialect('dial',dialect)
+
+        self.filename = filename
+        self.dialect = (dialect != None)
+
+        if clear_on_creation:
+            head = []
+            for key in parameters:
+                if key != 'dense_layers':
+                    head.append(key)
+                else:
+                    for i in range(10):
+                        head.append(key + '_{}'.format(i))
+
+            with open(self.filename, 'w') as f:
+                if self.dialect:
+                    writer = csv.writer(f,'dial')
+                else:
+                    writer = csv.writer(f)
+                writer.writerow(head)
+
+    def write_row(self, row, clear_after=True):
+
+        with open(self.filename, 'a') as f:
+            if self.dialect:
+                writer = csv.writer(f,'dial')
+            else:
+                writer = csv.writer(f)
+
+            writer.writerow(row)

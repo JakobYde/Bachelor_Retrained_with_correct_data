@@ -12,7 +12,7 @@
     <Name>LSRMRNNRoughSearch</Name>
     <RootNamespace>LSRMRNNRoughSearch</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>CondaEnv|CondaEnv|CNN</InterpreterId>
+    <InterpreterId>Global|VisualStudio|pythonkeras</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,6 +28,8 @@
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|CNN" />
     <InterpreterReference Include="CondaEnv|CondaEnv|python" />
+    <InterpreterReference Include="Global|VisualStudio|python" />
+    <InterpreterReference Include="Global|VisualStudio|pythonkeras" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

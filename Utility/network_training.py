@@ -7,6 +7,8 @@ from keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorBoard
 from keras.utils import to_categorical
 from keras.initializers import RandomNormal, glorot_uniform, orthogonal
 
+max_layers = 10
+
 def get_inputs(data, rnn_type='none'):
     [[x1t, x1v], [x2t, x2v], [yt, yv]] = data
     if rnn_type == 'none':
@@ -84,12 +86,27 @@ def build_model(input_eular, input_crp, parameters, seed=None):
 
     return model
 
-def print_csv(filename, parameters, min_performance, last_performance, time=0.):
-    assert(filename != ''),'filename should be set if printing to file.'
-    assert(False),'Implement me please.'
-    pass
+def print_row(filename, parameters, min_performance, last_performance, log, time=0.):
+    assert(filename == ''),'filename should be set if printing to file.'
+    assert(filename[-4:] != '.csv'),'file should be of .csv format'
 
-def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], log=False, log_filename='', model_path='', model_storage=''):
+    #row = [parameters[key] for key in parameters if key != 'dense_layers']
+    #row.append(parameters[['dense_layers'], [0 for i in range(max_layers - len(parameters[key]))]])
+    
+    row = []
+    for key in parameters:
+        if key != 'dense_layers':
+            row.append(parameters[key])
+        else:
+            for i in range(max_layers):
+                if i < len(parameters[key]):
+                    row.append(parameters[key][i])
+                else:
+                    row.append(0)
+    log.write_row(row)
+    return row
+
+def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], log=None, log_filename='', model_path='', model_storage=''):
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
     assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
 
@@ -122,7 +139,7 @@ def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbo
     time = datetime.datetime.now() - t_start
     time = time.seconds + time.microseconds / 1e6
 
-    if log: print_csv(filename=log_filename, parameters=parameters, min_performance=min_perf, last_performance=last_perf, time=time)
+    if log != None: print_row(filename=log_filename, parameters=parameters, min_performance=min_perf, last_performance=last_perf, time=time, log=log)
 
     if use_min_perf:
         return min_perf
