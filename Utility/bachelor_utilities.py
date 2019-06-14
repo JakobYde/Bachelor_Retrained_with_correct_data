@@ -32,16 +32,16 @@ def load_data(name, categorical=False):
         das = np.load(datapath + r"\BachelorOriginalData\NewDataDAS.npy")
     
     if name == 'FixedTraining':
-        eul = np.load(datapath + r"\BachelorFixedData\TrainingDataEUL.npy")
+        eul = np.load(datapath + r"\BachelorFixedData\CorrectTrainEUL.npy")
         eul = np.array(eul, dtype='float32')
-        crp = np.load(datapath + r"\BachelorFixedData\TrainingDataCRP.npy")
-        das = np.load(datapath + r"\BachelorFixedData\TrainingDataY.npy")
+        crp = np.load(datapath + r"\BachelorFixedData\CorrectTrainCRP.npy")
+        das = np.load(datapath + r"\BachelorFixedData\CorrectTrainDAS28.npy")
     
     if name == 'FixedTesting':
-        eul = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\TestingDataEUL.npy")
+        eul = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\CorrectTestEUL.npy")
         eul = np.array(eul, dtype='float32')
-        crp = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\TestingDataCRP.npy")
-        das = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\TestingDataY.npy")
+        crp = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\CorrectTestCRP.npy")
+        das = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\CorrectTestDAS28.npy")
 
     if categorical:      
         eul = keras.utils.to_categorical(eul, 5)
