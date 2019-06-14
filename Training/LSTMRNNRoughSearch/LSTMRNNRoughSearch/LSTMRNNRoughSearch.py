@@ -23,7 +23,7 @@ pg.add_value('rnn_activation', choices=['relu','tanh'])
 pg.add_value('rnn_dropout', choices=[0, 0.1, 0.15, 0.2, 0.25])
 pg.add_value('last_activation', choices=['relu', 'linear'])
 
-parameters = pg.sample(2000, unique=True)
+parameters = pg.sample(4000, unique=True)[2000:]
 
 first_param = parameters[0]
 last_param = parameters[-1]

@@ -145,8 +145,8 @@ def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verb
                     validation_data=([x1v, x2v], yv)
                     )
 
-    min_perf = min(hist.history['loss'])
-    last_perf = hist.history['loss'][-1]
+    min_perf = min(hist.history['val_loss'])
+    last_perf = hist.history['val_loss'][-1]
 
     time = datetime.datetime.now() - t_start
     time = time.seconds + time.microseconds / 1e6
