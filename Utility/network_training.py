@@ -1,6 +1,6 @@
 import numpy as np
 import datetime
-from keras.layers import Input, LSTM, Dense, SimpleRNN, concatenate, Masking, Dropout
+from keras.layers import Input, LSTM, Dense, SimpleRNN, concatenate, Masking, Dropout, Activation
 from keras.models import Sequential, Model
 from keras.optimizers import Adam, RMSprop, Adadelta
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorBoard
@@ -47,11 +47,10 @@ def get_optimizer(optimizer='adam', learning_rate=0.001):
 
 def get_activation(x, activation='relu'):
     assert (activation in ['linear', 'relu', 'leaky_relu', 'tanh']),'Activation function not recognized.'
-    if activation == 'linear': x = linear(x)
-    if activation == 'relu': x = relu(x)
-    if activation == 'leaky_relu': x = LeakyReLU()(x)
-    if activation == 'tanh': x = tanh(x)
-
+    if activation == 'linear': x = Activation('linear')(x)
+    if activation == 'relu': x = Activation('relu')(x)
+    if activation == 'leaky_relu': x = LeakyReLU()
+    if activation == 'tanh': x = Activation('relu')
     return x
 
 def build_model(input_eular, input_crp, parameters, seed=None):
@@ -89,7 +88,7 @@ def build_model(input_eular, input_crp, parameters, seed=None):
         x = get_activation(x, parameters['activation'])
         if dropout != 0:
             x = Dropout(rate=dropout)(x)
-    output = Dense(1, activation='linear', kernel_initializer=dense_initializer)(x)
+    output = Dense(1, kernel_initializer=dense_initializer)(x)
     output = get_activation(output, parameters['last_activation'])
 
     model = Model(input=[input_eular, input_crp], output=output)
