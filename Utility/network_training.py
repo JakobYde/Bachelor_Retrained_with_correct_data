@@ -46,12 +46,13 @@ def get_optimizer(optimizer='adam', learning_rate=0.001):
     return optimizer
 
 def get_activation(x, activation='relu'):
-    assert (activation in ['linear', 'relu', 'leaky_relu', 'tanh']),'Activation function not recognized.'
-    if activation == 'linear': x = Activation('linear')(x)
-    if activation == 'relu': x = Activation('relu')(x)
-    if activation == 'leaky_relu': x = LeakyReLU()
-    if activation == 'tanh': x = Activation('relu')
-    return x
+    assert (activation in ['linear', 'relu', 'leaky_relu', 'tanh', 'sigmoid']),'Activation function not recognized.'
+    if activation == 'linear': act = Activation('linear')
+    if activation == 'relu': act = Activation('relu')
+    if activation == 'leaky_relu': act = LeakyReLU()
+    if activation == 'tanh': act = Activation('relu')
+    if activation == 'sigmoid': act = Activation('sigmoid')
+    return act
 
 def build_model(input_eular, input_crp, parameters, seed=None):
     dropout = parameters['dropout']
@@ -85,11 +86,11 @@ def build_model(input_eular, input_crp, parameters, seed=None):
 
     for layer_size in [val for val in parameters["dense_layers"] if val != 0]:
         x = Dense(layer_size, activation='linear', kernel_initializer=dense_initializer)(x)
-        x = get_activation(x, parameters['activation'])
+        x = get_activation(x, parameters['activation'])(x)
         if dropout != 0:
             x = Dropout(rate=dropout)(x)
     output = Dense(1, kernel_initializer=dense_initializer)(x)
-    output = get_activation(output, parameters['last_activation'])
+    output = get_activation(output, parameters['last_activation'])(output)
 
     model = Model(input=[input_eular, input_crp], output=output)
 
