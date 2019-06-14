@@ -13,7 +13,7 @@ n_cv = 5
 
 pg = Pg.ParameterGenerator(seed=seed)
 pg.add_layer('dense_layers', choice_layer_amount=10,choice_layer_sizes=list(range(1,500)))
-pg.add_value('learning_rate', choices=[0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005])
+pg.add_value('learning_rate', choices=[0.005, 0.001, 0.0005, 0.0001, 0.00005])
 pg.add_value('optimizer', choices=['adam', 'rmsprop', 'adadelta'])
 pg.add_value('activation', choices=['relu', 'leaky_relu'])
 pg.add_value('dropout', choices=[0, 0.1, 0.15, 0.2, 0.25])
@@ -31,7 +31,7 @@ last_param = parameters[-1]
 x1, x2, y = Bu.load_data('FixedTraining')
 cvs = Bu.get_cross_validation(x1, x2, y, n_cv)
 
-cbs = Tr.get_callbacks(plat=True)
+cbs = Tr.get_callbacks(plat=True, es=True, tb=True, tb_path='D:\WindowsFolders\Documents\GitHub\BachelorRetraining\Logs\TB')
 
 arr = pg.as_array(first_param)
 
@@ -47,7 +47,7 @@ for i_param, param in enumerate(parameters):
     min_perfs = 0
     time = 0
     for i_cv, cv in enumerate(cvs):
-        last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False)
+        last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=True)
         last_perfs += last_perf
         min_perfs += min_perf
         time += dt

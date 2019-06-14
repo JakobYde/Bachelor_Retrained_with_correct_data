@@ -28,7 +28,7 @@ def get_inputs(data, rnn_type='none'):
         input_crp = Input(shape=(1,), dtype='float32', name='input_crp')
     return input_eular, input_crp, [[x1t, x1v], [x2t, x2v], [yt, yv]]
 
-def get_callbacks(plat=False, plat_patience=40, plat_delta=0.001, plat_factor=0.1, es=False, es_restore=False, es_patience=10, es_delta=0, tb=False, tb_path=''):
+def get_callbacks(plat=False, plat_patience=10, plat_delta=0.001, plat_factor=0.1, es=False, es_restore=False, es_patience=40, es_delta=0, tb=False, tb_path=''):
     assert(((not tb) or (tb_path != '')) and isinstance(tb_path, str)),'If TensorBoard is used, the path should be set.'
     cbs = []
     if plat: cbs.append(ReduceLROnPlateau(patience=plat_patience, factor=plat_factor, min_delta=plat_delta))
@@ -116,7 +116,7 @@ def print_row(filename, parameters, min_performance, last_performance, log, time
     log.write_row(row)
     return row
 
-def train_network(parameters, data, epochs=100, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], model_path='', model_storage=''):
+def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], model_path='', model_storage=''):
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
     assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
 
