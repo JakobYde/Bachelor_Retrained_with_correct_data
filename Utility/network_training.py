@@ -8,6 +8,7 @@ from keras.utils import to_categorical
 from keras.initializers import RandomNormal, glorot_uniform, orthogonal
 from keras.activations import tanh, relu, linear
 from keras.layers import LeakyReLU
+from keras.backend import clear_session
 
 max_layers = 10
 
@@ -119,6 +120,7 @@ def print_row(filename, parameters, min_performance, last_performance, log, time
 def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], model_path='', model_storage=''):
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
     assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
+    clear_session()
 
     t_start = datetime.datetime.now()
 
