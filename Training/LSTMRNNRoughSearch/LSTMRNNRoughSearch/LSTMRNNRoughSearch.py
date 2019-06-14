@@ -4,6 +4,8 @@ import Utility.parameter_generator as Pg
 import Utility.bachelor_utilities as Bu
 import Utility.network_training as Tr
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 filename = r'../../../Logs/initial_training.csv'
 
 seed = 0
@@ -21,7 +23,7 @@ pg.add_value('rnn_activation', choices=['relu','tanh'])
 pg.add_value('rnn_dropout', choices=[0, 0.1, 0.15, 0.2, 0.25])
 pg.add_value('last_activation', choices=['relu', 'linear'])
 
-parameters = pg.sample(200, unique=True)
+parameters = pg.sample(2000, unique=True)
 
 first_param = parameters[0]
 last_param = parameters[-1]
