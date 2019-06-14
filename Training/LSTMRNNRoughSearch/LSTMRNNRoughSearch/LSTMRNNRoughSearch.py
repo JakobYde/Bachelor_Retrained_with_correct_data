@@ -31,7 +31,7 @@ last_param = parameters[-1]
 x1, x2, y = Bu.load_data('FixedTraining')
 cvs = Bu.get_cross_validation(x1, x2, y, n_cv)
 
-cbs = Tr.get_callbacks(plat=True, es=True, tb=True, tb_path='D:\WindowsFolders\Documents\GitHub\BachelorRetraining\Logs\TB')
+cbs = Tr.get_callbacks(plat=True, es=True)
 
 arr = pg.as_array(first_param)
 
@@ -47,7 +47,10 @@ for i_param, param in enumerate(parameters):
     min_perfs = 0
     time = 0
     for i_cv, cv in enumerate(cvs):
-        last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=True)
+        if param['optimizer'] == 'adadelta':
+             last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs[1:], verbose=True)
+        else:
+             last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=True)
         last_perfs += last_perf
         min_perfs += min_perf
         time += dt

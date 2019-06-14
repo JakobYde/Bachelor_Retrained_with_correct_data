@@ -23,7 +23,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="bachelor_utilities.py" />
     <Compile Include="LSTMRNNRoughSearch.py" />
+    <Compile Include="network_training.py" />
+    <Compile Include="parameter_generator.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|CNN" />
