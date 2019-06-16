@@ -23,7 +23,7 @@ pg.add_value('rnn_activation', choices=['relu','tanh'])
 pg.add_value('rnn_dropout', choices=[0, 0.1, 0.15, 0.2, 0.25])
 pg.add_value('last_activation', choices=['relu', 'linear'])
 
-parameters = pg.sample(4000, unique=True)[2000:]
+parameters = pg.sample(2000, unique=True)[1892:]
 
 first_param = parameters[0]
 last_param = parameters[-1]
@@ -48,9 +48,9 @@ for i_param, param in enumerate(parameters):
     time = 0
     for i_cv, cv in enumerate(cvs):
         if param['optimizer'] == 'adadelta':
-             last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs[1:], verbose=True)
+             last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs[1:], verbose=False)
         else:
-             last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=True)
+             last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False)
         last_perfs += last_perf
         min_perfs += min_perf
         time += dt
