@@ -1,15 +1,20 @@
+import csv
+
 class DataSheet:
     def __init__(self, filename=None):
         self.data = {}
         self.types = []
 
         if filename != None:
-            load_file(filename)
+            self.load_file(filename)
 
     def set_head(self, row):
         assert (isinstance(row, list)),'Row should be a list.'
         for cell in row:
             self.data[cell] = []
+
+    def get_head(self):
+        return [key for key in self.data]
 
     def set_types(self, row):
         assert (isinstance(row, list) and (False not in [isinstance(cell, str) for cell in row])),'Row should be a list of strings.'
@@ -21,11 +26,17 @@ class DataSheet:
             if cell == 'str': self.types.append(str)
             if cell == 'float': self.types.append(float)
 
+    def get_types(self):
+        return self.types
+
     def set_categories(self, row):
         assert (isinstance(row, list) and (False not in [(cell in ['in', 'out']) for cell in row])),'Row should be a list of valid categories.'
         self.categories = []
         for cell in row:
             self.categories.append(cell)
+
+    def get_categories(self):
+        return self.categories
 
     def add_row(self, row):
         assert (isinstance(row, list)),'Row should be a list.'
@@ -33,14 +44,14 @@ class DataSheet:
             self.data[key].append(self.types[i](row[i]))
 
     def load_file(self, filename):
-        file = []
+        data = []
         with open(filename, 'r') as file:
             reader = csv.reader(file)
             for row in reader:
-                file.append(list(row))
-        set_head(file[0])
-        set_categores(file[1])
-        set_types(file[2])
+                data.append(list(row))
+        self.set_head(data[0])
+        self.set_categories(data[1])
+        self.set_types(data[2])
 
-        for row in file[3:]:
-            add_row(row)
+        for row in data[3:]:
+            self.add_row(row)
