@@ -2,17 +2,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>0233144c-359e-439e-a174-8bd6ea9ea696</ProjectGuid>
+    <ProjectGuid>030ddb60-396e-484e-a476-5dc3b6cadc4f</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>LSTMRNNRoughSearch.py</StartupFile>
+    <StartupFile>DataAnalysis.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>LSRMRNNRoughSearch</Name>
-    <RootNamespace>LSRMRNNRoughSearch</RootNamespace>
-    <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>CondaEnv|CondaEnv|CNN</InterpreterId>
+    <Name>DataAnalysis</Name>
+    <RootNamespace>DataAnalysis</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,17 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="bachelor_utilities.py" />
-    <Compile Include="LSTMRNNRoughSearch.py" />
-    <Compile Include="network_training.py" />
-    <Compile Include="parameter_generator.py" />
-  </ItemGroup>
-  <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|CNN" />
-    <InterpreterReference Include="CondaEnv|CondaEnv|KerasGPU2" />
-    <InterpreterReference Include="CondaEnv|CondaEnv|python" />
-    <InterpreterReference Include="Global|VisualStudio|python" />
-    <InterpreterReference Include="Global|VisualStudio|pythonkeras" />
+    <Compile Include="DataAnalysis.py" />
+    <Compile Include="DataSheet.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
