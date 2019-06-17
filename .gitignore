@@ -1,4 +1,6 @@
-*
-!*.csv
-!*.py
-!*.html
+Logs/
+*.html
+*.pyproj
+*.pyc
+*.suo
+*.sln
