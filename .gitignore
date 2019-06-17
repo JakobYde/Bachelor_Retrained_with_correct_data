@@ -4,3 +4,5 @@ Logs/
 *.pyc
 *.suo
 *.sln
+*.json
+*.sqlite

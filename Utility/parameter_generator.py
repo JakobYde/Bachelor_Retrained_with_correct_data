@@ -12,10 +12,9 @@ class Parameter:
         else:
             self.change_chance = 1
             self.default_value = None
-
-        if choices != []:
-            self.choices = choices
-        else:
+            
+        self.choices = choices
+        if choices == []:
             self.change_chance = 0
         
         if default_value != None and choices != []:
@@ -35,6 +34,8 @@ class Parameter:
         self.change_chance = new_chance
         
     def get_permutations(self):
+        if (self.choices == []):
+            return 1
         if (self.default_value is not None) and (self.default_value not in self.choices):
             return len(self.choices) + 1
         else:
