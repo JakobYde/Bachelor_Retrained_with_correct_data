@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 
 class DataSheet:
     def __init__(self, filename=None):
@@ -55,3 +56,22 @@ class DataSheet:
 
         for row in data[3:]:
             self.add_row(row)
+
+    def get_in(self):
+        result = {}
+        for i, key in enumerate(self.data):
+            pass
+
+    def remove_by_performance(self, parameter, threshold=None):
+        assert (parameter in self.data),'Invalid parameter.'
+        n = 0
+        if threshold == None:
+            mae = np.mean(np.abs(self.data[parameter] - np.mean(self.data[parameter])))
+            threshold = np.mean(self.data[parameter]) + mae
+        for element in self.data[parameter]:
+            if element > threshold:
+                n += 1
+                index = self.data[parameter].index(element)
+                for key in self.data:
+                    del self.data[key][index]
+        return n
