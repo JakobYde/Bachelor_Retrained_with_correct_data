@@ -5,6 +5,7 @@ class DataSheet:
     def __init__(self, filename=None):
         self.data = {}
         self.types = []
+        self.categories = []
 
         if filename != None:
             self.load_file(filename)
@@ -44,6 +45,10 @@ class DataSheet:
         for i, key in enumerate(self.data):
             self.data[key].append(self.types[i](row[i]))
 
+    def get_data(self, parameter=None):
+        if parameter == None: return self.data
+        else: return self.data[parameter]
+
     def load_file(self, filename):
         data = []
         with open(filename, 'r') as file:
@@ -57,10 +62,27 @@ class DataSheet:
         for row in data[3:]:
             self.add_row(row)
 
-    def get_in(self):
-        result = {}
+    def include(self, parameters=None, categories=None, types=None):
+        result = DataSheet()
         for i, key in enumerate(self.data):
-            pass
+            if parameters == None or key in parameters:
+                if categories == None or self.categories[i] in categories:
+                    if types == None or self.types[i] in types:
+                        result.categories.append(self.categories[i])
+                        result.types.append(self.types[i])
+                        result.data[key] = self.data[key]
+        return result
+
+    def exclude(self, parameters=None, categories=None, types=None):
+        result = DataSheet()
+        for i, key in enumerate(self.data):
+            if parameters == None or key not in parameters:
+                if categories == None or self.categories[i] not in categories:
+                    if types == None or self.types[i] not in types:
+                        result.categories.append(self.categories[i])
+                        result.types.append(self.types[i])
+                        result.data[key] = self.data[key]
+        return result
 
     def remove_by_performance(self, parameter, threshold=None):
         assert (parameter in self.data),'Invalid parameter.'
@@ -68,10 +90,15 @@ class DataSheet:
         if threshold == None:
             mae = np.mean(np.abs(self.data[parameter] - np.mean(self.data[parameter])))
             threshold = np.mean(self.data[parameter]) + mae
-        for element in self.data[parameter]:
-            if element > threshold:
-                n += 1
-                index = self.data[parameter].index(element)
-                for key in self.data:
-                    del self.data[key][index]
+        elements = list(self.data[parameter])
+        elements.append(threshold)
+        elements.sort(reverse=True)
+        elements = elements[:elements.index(threshold)]
+        for element in elements:
+            n += 1
+            index = self.data[parameter].index(element)
+            #print(element, index)
+            for key in self.data:
+                del self.data[key][index]
+        m = max(self.data[parameter])
         return n
