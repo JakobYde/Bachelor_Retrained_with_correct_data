@@ -1,4 +1,5 @@
 Logs/
+!Logs/*/*.html
 *.pyproj
 *.pyc
 *.suo
