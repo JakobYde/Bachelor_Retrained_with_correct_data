@@ -80,6 +80,15 @@ def get_cross_validation(eul, crp, das28, n):
         result[i] = [[x1t, x1v], [x2t, x2v], [yt, yv]]  
     return result
 
+def partition_array(arr, i_partition, n_partitions = 2):
+    result = []
+
+    for i, element in enumerate(arr):
+        if (i % n_partitions) == i_partition:
+            result.append(element)
+
+    return result
+
 class CSVWriter:
     def __init__(self, filename, head=[], dialect=None, clear_on_creation=True):
         assert isinstance(filename, str),'File name should be a string.'
