@@ -8,7 +8,7 @@ from random import shuffle
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-filename = r'../../../Logs/learning_rate.csv'
+filename = r'../../../Logs/results.csv'
 
 seed = None
 n_cv = 5

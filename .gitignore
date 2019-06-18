@@ -1,4 +1,4 @@
-Logs/*
+Logs/results.csv
 *.pyproj
 *.pyc
 *.suo
