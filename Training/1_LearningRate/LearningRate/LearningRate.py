@@ -10,7 +10,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 filename = r'../../../Logs/learning_rate.csv'
 
-seed = 0
+seed = None
 n_cv = 5
 
 lr_grid = []

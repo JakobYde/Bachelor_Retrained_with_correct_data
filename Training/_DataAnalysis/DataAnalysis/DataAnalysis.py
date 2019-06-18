@@ -2,11 +2,10 @@ from DataSheet import DataSheet
 from DataPlotting import *
 import numpy as np
 
-
 ds = DataSheet('results_0.csv')
 removed = ds.remove_by_performance('last_perf')
 
-ds = ds.exclude(parameters=['iteration'])
+ds = ds.exclude(parameters=['last_perf', 'min_perf'])
 
 ds_in = ds.include(categories=['in'])
 ds_out = ds.include(categories=['out'])
