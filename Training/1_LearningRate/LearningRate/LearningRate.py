@@ -4,6 +4,8 @@ import Utility.parameter_generator as Pg
 import Utility.bachelor_utilities as Bu
 import Utility.network_training as Tr
 
+from random import shuffle
+
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 filename = r'../../../Logs/learning_rate.csv'
@@ -13,7 +15,7 @@ n_cv = 5
 
 lr_grid = []
 
-a = 4
+a = 7
 
 lr_exp_range = range(-8, 0)
 lr_cof_range = range(1, a * 10)
@@ -59,6 +61,8 @@ head += ['last_perf', 'min_perf', 'time']
 print(head)
 
 log = Bu.CSVWriter(filename, head=head)
+
+shuffle(parameters)
 
 for i_param, param in enumerate(parameters):
     last_perfs = 0
