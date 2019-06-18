@@ -12,7 +12,7 @@ filename = r'../../../Logs/results.csv'
 
 n_cv = 5
 
-pg = Pg.ParameterGenerator()
+pg = Pg.ParameterGenerator(seed=1)
 pg.add_value('dense_layers', default_value=[139, 486, 152, 79, 61, 0, 0, 0, 0, 0])
 pg.add_value('learning_rate', default_value=0.005)
 pg.add_value('optimizer', default_value='adam')
@@ -34,10 +34,6 @@ parameters = []
 
 temp_param = dict(param)
 temp_param['rnn_type'] = 'none'
-parameters.append(temp_param)
-parameters.append(temp_param)
-parameters.append(temp_param)
-parameters.append(temp_param)
 parameters.append(temp_param)
 for rnn_type in rnn_types:
     for rnn_size in rnn_sizes:

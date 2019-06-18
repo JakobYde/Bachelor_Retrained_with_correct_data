@@ -100,29 +100,8 @@ def build_model(input_eular, input_crp, parameters, seed=None):
 
     return model
 
-def print_row(filename, parameters, min_performance, last_performance, log, time=0.):
-    assert(filename == ''),'filename should be set if printing to file.'
-    assert(filename[-4:] != '.csv'),'file should be of .csv format'
-
-    #row = [parameters[key] for key in parameters if key != 'dense_layers']
-    #row.append(parameters[['dense_layers'], [0 for i in range(max_layers - len(parameters[key]))]])
-    
-    row = []
-    for key in parameters:
-        if key != 'dense_layers':
-            row.append(parameters[key])
-        else:
-            for i in range(max_layers):
-                if i < len(parameters[key]):
-                    row.append(parameters[key][i])
-                else:
-                    row.append(0)
-    log.write_row(row)
-    return row
-
 def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verbose=False, seed=None, use_min_perf=False, callbacks=[], model_path='', model_storage=''):
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
-    assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
     clear_session()
    
     set_random_seed(seed)
