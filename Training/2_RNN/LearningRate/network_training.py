@@ -1,7 +1,7 @@
 import numpy as np
 import datetime
 from keras.layers import Input, LSTM, Dense, SimpleRNN, concatenate, Masking, Dropout, Activation
-from keras.models import Sequential, Model
+from keras.models import Sequential, Model, load_model, save_model
 from keras.optimizers import Adam, RMSprop, Adadelta
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorBoard
 from keras.utils import to_categorical
@@ -9,6 +9,9 @@ from keras.initializers import RandomNormal, glorot_uniform, orthogonal
 from keras.activations import tanh, relu, linear
 from keras.layers import LeakyReLU
 from keras.backend import clear_session
+
+from tensorflow import set_random_seed
+from numpy.random import seed as set_numpy_seed
 
 max_layers = 10
 
@@ -76,12 +79,12 @@ def build_model(input_eular, input_crp, parameters, seed=None):
         if rnn_type == 'lstm':
             x = LSTM(rnn_size, activation=rnn_activation, 
                      kernel_initializer=rnn_kernel_initializer, recurrent_initializer=rnn_recurrent_initializer, 
-                     dropout=dropout, recurrent_dropout=rnn_dropout)(x)
+                     dropout=dropout, recurrent_dropout=rnn_dropout, name='LSTM_{}'.format(rnn_size))(x)
 
         elif rnn_type == 'simplernn':
             x = SimpleRNN(rnn_size, activation=rnn_activation, 
                           kernel_initializer=rnn_kernel_initializer, recurrent_initializer=rnn_recurrent_initializer, 
-                          dropout=dropout, recurrent_dropout=rnn_dropout)(x)
+                          dropout=dropout, recurrent_dropout=rnn_dropout, name='SRNN_{}'.format(rnn_size))(x)
         
         x = concatenate([x, input_crp])
 
@@ -121,6 +124,9 @@ def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verb
     assert(isinstance(parameters, dict)),'Parameters should be a dictionary.'
     assert(model_storage in ["", "save", "load"]),'model_storage command not recognized.'
     clear_session()
+   
+    set_random_seed(seed)
+    set_numpy_seed(seed)
 
     t_start = datetime.datetime.now()
 
@@ -130,10 +136,10 @@ def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verb
 
     model = build_model(input_eular=input_eular, input_crp=input_crp, parameters=parameters, seed=seed)
     
+    if verbose: model.summary()
+
     optimizer = get_optimizer(parameters['optimizer'], parameters['learning_rate'])
     model.compile(optimizer=optimizer, loss=loss)
-
-    if verbose: model.summary()
 
     hist = model.fit(
                     x=[x1t, x2t],
