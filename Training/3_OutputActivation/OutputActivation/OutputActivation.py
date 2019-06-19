@@ -30,11 +30,9 @@ pg.add_value('last_activation', default_value='linear')
 og_param = pg.sample(1, unique=True)[0]
 parameters = []
 
-for output_act in ['linear', 'relu', 'leakyrelu']:
+for output_act in ['linear', 'relu', 'leaky_relu']:
     param = dict(og_param)
     param['last_activation'] = output_act
-    parameters.append(param)
-    parameters.append(param)
     parameters.append(param)
 
 x1, x2, y = Bu.load_data('FixedTraining')
@@ -51,7 +49,7 @@ log = Bu.CSVWriter(filename, head=head)
 
 model_path = 'current_weights.h5'
 
-for i in range(0, 200):
+for i in range(0, 150):
     seed = randint(0, 2**32-1)
     set_random_seed(seed)
     set_numpy_seed(seed)
