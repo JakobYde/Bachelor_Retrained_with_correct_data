@@ -1,7 +1,7 @@
 import numpy as np
 import datetime
 from keras.layers import Input, LSTM, Dense, SimpleRNN, concatenate, Masking, Dropout, Activation
-from keras.models import Sequential, Model
+from keras.models import Sequential, Model, load_model, save_model
 from keras.optimizers import Adam, RMSprop, Adadelta
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorBoard
 from keras.utils import to_categorical
@@ -134,6 +134,11 @@ def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verb
     model.compile(optimizer=optimizer, loss=loss)
 
     if verbose: model.summary()
+
+    if model_storage == 'save':
+        save_model(model, model_path)
+    elif model_storage == 'load':
+        model = load_model(model_path)
 
     hist = model.fit(
                     x=[x1t, x2t],
