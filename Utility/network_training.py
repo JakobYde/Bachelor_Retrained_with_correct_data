@@ -46,7 +46,7 @@ def get_optimizer(optimizer='adam', learning_rate=0.001):
     if optimizer == 'adadelta': optimizer = Adadelta()
     return optimizer
 
-def get_activation(x, activation='relu'):
+def get_activation(activation='relu'):
     assert (activation in ['linear', 'relu', 'leaky_relu', 'tanh', 'sigmoid']),'Activation function not recognized.'
     if activation == 'linear': act = Activation('linear')
     if activation == 'relu': act = Activation('relu')
@@ -87,11 +87,11 @@ def build_model(input_eular, input_crp, parameters, seed=None):
 
     for layer_size in [val for val in parameters["dense_layers"] if val != 0]:
         x = Dense(layer_size, activation='linear', kernel_initializer=dense_initializer)(x)
-        x = get_activation(x, parameters['activation'])(x)
+        x = get_activation(parameters['activation'])(x)
         if dropout != 0:
             x = Dropout(rate=dropout)(x)
     output = Dense(1, kernel_initializer=dense_initializer)(x)
-    output = get_activation(output, parameters['last_activation'])(output)
+    output = get_activation(parameters['last_activation'])(output)
 
     model = Model(input=[input_eular, input_crp], output=output)
 
@@ -136,9 +136,9 @@ def train_network(parameters, data, epochs=1000, batch_size=32, loss='mse', verb
     if verbose: model.summary()
 
     if model_storage == 'save':
-        save_model(model, model_path)
+        model.save_weights(model_path)
     elif model_storage == 'load':
-        model = load_model(model_path)
+        model.load_weights(model_path)
 
     hist = model.fit(
                     x=[x1t, x2t],
