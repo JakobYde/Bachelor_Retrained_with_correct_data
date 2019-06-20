@@ -40,7 +40,7 @@ cvs = Bu.get_cross_validation(x1, x2, y, n_cv)
 
 cbs = Tr.get_callbacks(plat=True, es=True)
 
-head = ['iteration']
+head = ['iteration', 'seed']
 head += pg.get_head()
 head += ['last_perf', 'min_perf', 'time']
 print(head)
@@ -49,7 +49,7 @@ log = Bu.CSVWriter(filename, head=head)
 
 model_path = 'current_weights.h5'
 
-for i in range(0, 150):
+while True:
     seed = randint(0, 2**32-1)
     set_random_seed(seed)
     set_numpy_seed(seed)
@@ -64,14 +64,14 @@ for i in range(0, 150):
             else:
                 model_storage = 'load'
 
-            last_perf, min_perf, dt = Tr.train_network(param, cv, seed=i, callbacks=cbs, verbose=False, model_path=model_path, model_storage=model_storage)
+            last_perf, min_perf, dt = Tr.train_network(param, cv, seed=seed, callbacks=cbs, verbose=False, model_path=model_path, model_storage=model_storage)
             last_perfs += last_perf
             min_perfs += min_perf
             time += dt
         last_perfs /= n_cv
         min_perfs /= n_cv
     
-        row = [i_param]
+        row = [i_param, seed]
         row += pg.as_array(param)
         row += [str(c) for c in [last_perfs, min_perfs, time]]
         print(row)
