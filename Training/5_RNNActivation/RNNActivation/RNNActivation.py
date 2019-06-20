@@ -31,9 +31,11 @@ og_param = pg.sample(1, unique=True)[0]
 parameters = []
 
 for hidden_act in ['relu', 'leaky_relu']:
-    param = dict(og_param)
-    param['activation'] = hidden_act
-    parameters.append(param)
+    for rnn_act in ['tanh', 'relu']:
+        param = dict(og_param)
+        param['activation'] = hidden_act
+        param['rnn_activation'] = rnn_act
+        parameters.append(param)
 
 x1, x2, y = Bu.load_data('FixedTraining')
 cvs = Bu.get_cross_validation(x1, x2, y, n_cv)
