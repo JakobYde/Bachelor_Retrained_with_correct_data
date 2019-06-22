@@ -6,3 +6,6 @@ Logs/results.csv
 *.json
 *.sqlite
 *.pyc
+*.h5
+*.mh5
+*.cpython-36.pyc
