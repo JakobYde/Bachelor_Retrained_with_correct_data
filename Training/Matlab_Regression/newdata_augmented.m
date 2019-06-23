@@ -1,9 +1,9 @@
 %% Load data from CSV files
-EUL_train = csvread('TrainingDataEUL.csv');
-CRP_train = csvread('TrainingDataCRP.csv');
-Y_train = csvread('TrainingDataY.csv');
+EUL_train = csvread('D:/WindowsFolders/Code/Data/BachelorFixedData/csv_files/TrainingDataEUL.csv');
+CRP_train = csvread('D:/WindowsFolders/Code/Data/BachelorFixedData/csv_files/TrainingDataCRP.csv');
+Y_train = csvread('D:/WindowsFolders/Code/Data/BachelorFixedData/csv_files/TrainingDataY.csv');
 
-test_data = csvread('NewDataRegression.csv');
+test_data = csvread('D:/WindowsFolders/Code/Data/BachelorFixedData/csv_files/NewDataRegression.csv');
 
 patient_number = test_data(:,1);
 CRP_test = test_data(:,2);
