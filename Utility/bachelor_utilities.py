@@ -38,10 +38,10 @@ def load_data(name, categorical=False):
         das = np.load(datapath + r"\BachelorFixedData\CorrectTrainDAS28.npy")
     
     if name == 'FixedTesting':
-        eul = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\CorrectTestEUL.npy")
+        eul = np.load(datapath + r"\BachelorFixedData\CorrectTestEUL.npy")
         eul = np.array(eul, dtype='float32')
-        crp = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\CorrectTestCRP.npy")
-        das = np.load(r"D:\WindowsFolders\Code\Data\BachelorFixedData\CorrectTestDAS28.npy")
+        crp = np.load(datapath + r"\BachelorFixedData\CorrectTestCRP.npy")
+        das = np.load(datapath + r"\BachelorFixedData\CorrectTestDAS28.npy")
 
     if categorical:      
         eul = keras.utils.to_categorical(eul, 5)

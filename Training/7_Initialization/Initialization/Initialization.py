@@ -34,7 +34,7 @@ parameters = pg.sample(1, unique=True)
 x1, x2, y = Bu.load_data('FixedTraining')
 cvs = Bu.get_cross_validation(x1, x2, y, n_cv)
 
-cbs = Tr.get_callbacks(plat=True, es=True)
+cbs = Tr.get_callbacks(plat=True, es=True, tb=True, tb_path=r'D:\WindowsFolders\Documents\GitHub\BachelorRetraining\Logs\TB')
 
 head = ['iteration']
 head += pg.get_head()
@@ -46,36 +46,35 @@ log = Bu.CSVWriter(filename, head=head)
 
 best_perf = 100
 i = 0
-while True:
-    i += 1
-    for i_param, param in enumerate(parameters):
-        last_perfs = 0
-        min_perfs = 0
-        time = 0
-        for i_cv, cv in enumerate(cvs):
-            model_path = 'weights_{}.h5'.format(i)
-            if i_param + i_cv == 0:
-                model_storage = 'save'
-            else:
-                model_storage = 'load'
+i += 1
+for i_param, param in enumerate(parameters):
+    last_perfs = 0
+    min_perfs = 0
+    time = 0
+    for i_cv, cv in enumerate(cvs):
+        model_path = 'weights_{}.h5'.format(i)
+        if i_param + i_cv == 0:
+            model_storage = 'save'
+        else:
+            model_storage = 'load'
                 
-            if i_cv == 4:
-                last_perf, min_perf, dt = Tr.train_network(param, cv, seed=None, callbacks=cbs, verbose=False, model_path=model_path, model_storage=model_storage, save_threshold=best_perf, current_perf=last_perfs)
-            else:
-                last_perf, min_perf, dt = Tr.train_network(param, cv, seed=None, callbacks=cbs, verbose=False, model_path=model_path, model_storage=model_storage)
-            last_perfs += last_perf
-            min_perfs += min_perf
-            time += dt
-        last_perfs /= n_cv
-        min_perfs /= n_cv
+        if i_cv == 4:
+            last_perf, min_perf, dt = Tr.train_network(param, cv, seed=None, callbacks=cbs, verbose=False, model_path=model_path, model_storage=model_storage, save_threshold=best_perf, current_perf=last_perfs)
+        else:
+            last_perf, min_perf, dt = Tr.train_network(param, cv, seed=None, callbacks=cbs, verbose=False, model_path=model_path, model_storage=model_storage)
+        last_perfs += last_perf
+        min_perfs += min_perf
+        time += dt
+    last_perfs /= n_cv
+    min_perfs /= n_cv
 
-        if last_perfs < best_perf:
-            best_perf = last_perfs
+    if last_perfs < best_perf:
+        best_perf = last_perfs
 
-        row = [i]
-        row += pg.as_array(param)
-        row += [str(c) for c in [last_perfs, min_perfs, time]]
-        print(row)
-        log.write_row(row)
+    row = [i]
+    row += pg.as_array(param)
+    row += [str(c) for c in [last_perfs, min_perfs, time]]
+    print(row)
+    log.write_row(row)
     
 pass
