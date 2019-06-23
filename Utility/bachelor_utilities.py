@@ -89,6 +89,24 @@ def partition_array(arr, i_partition, n_partitions = 2):
 
     return result
 
+def npy_to_csv(npy_folder_path, csv_folder_path):
+    assert (isinstance(npy_folder_path, str)), "npy_folder_path should be a string containing a path"
+    assert (isinstance(csv_folder_path, str)), "csv_folder_path should be a string containing a path"
+
+    x_training_eul = np.load(npy_folder_path + "CorrectTrainEUL.npy")
+    x_test_eul = np.load(npy_folder_path + "CorrectTestEUL.npy")
+    x_training_crp = np.load(npy_folder_path + "CorrectTrainCRP.npy")
+    x_test_crp = np.load(npy_folder_path + "CorrectTestCRP.npy")
+    y_training = np.load(npy_folder_path + "CorrectTrainDAS28.npy")
+    y_test = np.load(npy_folder_path + "CorrectTestDAS28.npy")
+
+    np.savetxt(csv_folder_path + "TrainingDataEUL.csv", x_training_eul, delimiter=",")
+    np.savetxt(csv_folder_path + "TestingDataEUL.csv", x_test_eul, delimiter=",")
+    np.savetxt(csv_folder_path + "TrainingDataCRP.csv", x_training_crp, delimiter=",")
+    np.savetxt(csv_folder_path + "TestingDataCRP.csv", x_test_crp, delimiter=",")
+    np.savetxt(csv_folder_path + "TrainingDataY.csv", y_training, delimiter=",")
+    np.savetxt(csv_folder_path + "TestingDataY.csv", y_test, delimiter=",")
+
 class CSVWriter:
     def __init__(self, filename, head=[], dialect=None, clear_on_creation=True):
         assert isinstance(filename, str),'File name should be a string.'
